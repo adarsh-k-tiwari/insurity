@@ -24,6 +24,43 @@ This project implements a comprehensive telematics-based insurance system that u
 - **Revenue-neutral design** with improved risk selection
 - **68% R² model accuracy** for risk prediction
 
+### Folder Structure
+
+```austin-telematics-insurance/
+├── bin/                                    # Executable scripts
+│   └── create_script.sql                   # Database schema creation script
+│
+├── data/                                   # Generated data and sample outputs
+│   ├── driver_risk_scores.csv              # ML-generated risk assessments per driver
+│   ├── pricing_results.csv                 # Final premium calculations and comparisons
+│   ├── sample_austin_incidents.csv         # Sample traffic incident data from Austin API
+│   ├── sample_driver_profiles.csv          # Sample driver demographic and behavioral profiles
+│   └── sample_telematics.csv               # Sample synthetic telematics data points
+│
+├── docs/                                   # Project documentation
+│   └── Project Documentation.pdf           # Comprehensive technical and business documentation
+│
+├── models/                                 # Trained ML models
+│   ├── risk_model_random_forest.pkl        # Random Forest risk scoring model
+│   ├── risk_model_xgboost.pkl              # XGBoost risk scoring model  
+│   ├── risk_model_neural_network.pkl       # Neural Network risk scoring model
+│   ├── scaler_standard.pkl                 # StandardScaler for feature normalization
+│   └── feature_names.pkl                   # Feature name mappings for model inference
+│
+├── src/                                    # Source code and main application files
+│   ├── utils/                              # Utility functions and helper modules
+|   |   ├── logging_config.py               # Configuration file for logging
+│   ├── data_generator.py                   # Telematics data generation and Austin API integration
+│   ├── pricing_engine.py                   # Dynamic pricing calculations (PAYD/PHYD models)
+│   ├── risk_prediction.py                  # ML risk scoring pipeline and model training
+│   └── app.py                              # Streamlit dashboard and web interface
+│
+├── .gitignore                              # Git ignore patterns for Python and data files
+├── requirements.txt                        # Python package dependencies
+├── .env.example                            # Environment variables template
+└── README.md                               # Main project documentation and setup guide
+```
+
 ## Quick Start
 
 ### Prerequisites
