@@ -102,19 +102,26 @@ st.markdown("""
         color: #dc3545;
     }
     
-    .chart-container {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 20px;
+    .custom-section-divider {
         padding: 2rem;
-        margin: 1rem 0;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: 1px solid #444;
+        border-radius: 15px;
+        background-color: #1a1a1a; /* A slightly different background to stand out */
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        margin-bottom: 2rem; /* Add space below the card */
     }
+
+    # .chart-container {
+    #     background: rgba(255, 255, 255, 0.95);
+    #     border: 1px solid rgba(255, 255, 255, 0.3);
+    #     border-radius: 20px;
+    #     padding: 2rem;
+    #     margin: 1rem 0;
+    #     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    # }
     
     .section-header {
         background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.2);
         padding: 1.5rem;
         border-radius: 15px;
@@ -130,7 +137,6 @@ st.markdown("""
     
     .behavior-card {
         background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.3);
         border-radius: 20px;
         padding: 2rem;
@@ -530,8 +536,7 @@ if savings_pct != 0:
 # =========================
 # Enhanced Driving Behavior Section
 # =========================
-st.markdown('<div class="section-header"><h3>🚦 Driving Behavior Analysis</h3></div>', unsafe_allow_html=True)
-
+st.markdown('<div class="section-header"><h3>Driving Behavior Analysis</h3></div>', unsafe_allow_html=True)
 if not kpi_data['behavior'].empty:
     behavior = kpi_data['behavior'].iloc[0]
     
@@ -546,7 +551,7 @@ if not kpi_data['behavior'].empty:
         st.markdown(
             f"""
             <div class="behavior-card" style="padding: 1rem; background: #222831; border-radius: 12px;">
-                <h4 style="color: #28a745; margin-bottom: 1rem; font-weight: 600;">🛑 Smooth Braking</h4>
+                <h4 style="color: #28a745; margin-bottom: 1rem; font-weight: 600;">Smooth Braking</h4>
                 <p style="color: #fff; font-size: 0.9rem; margin-top: 1rem;">
                     % trips with controlled braking behavior
                 </p>
@@ -559,7 +564,7 @@ if not kpi_data['behavior'].empty:
         st.markdown(
             f"""
             <div class="behavior-card" style="padding: 1rem; background: #222831; border-radius: 12px;">
-                <h4 style="color: #fd7e14; margin-bottom: 1rem; font-weight: 600;">⚡ Controlled Acceleration</h4>
+                <h4 style="color: #fd7e14; margin-bottom: 1rem; font-weight: 600;">Controlled Acceleration</h4>
                 <p style="color: #fff; font-size: 0.9rem; margin-top: 1rem;">
                 % trips with smooth acceleration behavior
             </p>
@@ -572,7 +577,7 @@ if not kpi_data['behavior'].empty:
         st.markdown(
             f"""
             <div class="behavior-card" style="padding: 1rem; background: #222831; border-radius: 12px;">
-                <h4 style="color: #6f42c1; margin-bottom: 1rem; font-weight: 600;">📱 Focus Score</h4>
+                <h4 style="color: #6f42c1; margin-bottom: 1rem; font-weight: 600;">Focus Score</h4>
                 <p style="color: #fff; font-size: 0.9rem; margin-top: 1rem;">
                     % trips without phone usage
                 </p>
@@ -580,12 +585,12 @@ if not kpi_data['behavior'].empty:
             """,
             unsafe_allow_html=True
         )
-
+    
 
 # =========================
 # Enhanced Charts Section
 # =========================
-st.markdown('<div class="section-header"><h3>📈 Performance Trends</h3></div>', unsafe_allow_html=True)
+st.markdown('<div class="section-header"><h3>Performance Trends</h3></div>', unsafe_allow_html=True)
 
 # Trend analysis
 trend_query = f"""
@@ -613,41 +618,36 @@ if not trend_data.empty:
         (trend_data['PHONE_USAGE_EVENTS'] / trend_data['DATA_POINTS'] * 100)
     ) / 3
     
-    # Create enhanced trend chart
-    fig = make_subplots(
-        rows=2, cols=1,
-        subplot_titles=('Daily Safety Score Trend', 'Average Speed Trend'),
-        vertical_spacing=0.1
-    )
+    # Create a combined chart with secondary y-axis
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
     
-    # Safety score trend
+    # Safety score trend (left axis)
     fig.add_trace(
         go.Scatter(
             x=trend_data['DATE'],
             y=trend_data['daily_safety_score'],
             mode='lines+markers',
             name='Safety Score',
-            line=dict(color='#28a745', width=3),
+            line=dict(color='#20c997', width=3),
             marker=dict(size=8, symbol='circle'),
-            fill='tonexty',
-            fillcolor='rgba(40, 167, 69, 0.1)'
         ),
-        row=1, col=1
+        secondary_y=False
     )
     
-    # Speed trend
+    # Speed trend (right axis)
     fig.add_trace(
         go.Scatter(
             x=trend_data['DATE'],
             y=trend_data['AVG_SPEED'],
             mode='lines+markers',
             name='Average Speed (km/h)',
-            line=dict(color='#667eea', width=3),
+            line=dict(color="#9d6ef4", width=3),
             marker=dict(size=8, symbol='diamond')
         ),
-        row=2, col=1
+        secondary_y=True
     )
     
+    # Layout
     fig.update_layout(
         height=600,
         template='plotly_white',
@@ -656,15 +656,20 @@ if not trend_data.empty:
         hovermode='x unified'
     )
     
+    # Axis labels
+    fig.update_yaxes(title_text="Safety Score", secondary_y=False, range=[0, 100])
+    fig.update_yaxes(title_text="Average Speed (km/h)", secondary_y=True, range=[0, 50])
+
     st.markdown('<div class="chart-container">', unsafe_allow_html=True)
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 # =========================
 # Peer Comparison (if enabled)
 # =========================
 if show_comparisons:
-    st.markdown('<div class="section-header"><h3>👥 Peer Comparison</h3></div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header"><h3>Peer Comparison</h3></div>', unsafe_allow_html=True)
     
     # Get peer data (same age group and vehicle type)
     selected_driver_info = drivers[drivers["DRIVER_ID"] == DRIVER_ID].iloc[0]
@@ -696,7 +701,7 @@ if show_comparisons:
             comparison_fig.add_trace(go.Bar(
                 x=['You', 'Peers'],
                 y=[risk_score, AVG_PEER_RISK],
-                marker_color=['#667eea', '#95a5a6'],
+                marker_color=["#72ee8f" if risk_score < AVG_PEER_RISK else "#f46f7d", "#ffd084"],
                 text=[f'{risk_score:.3f}', f'{AVG_PEER_RISK:.3f}'],
                 textposition='auto'
             ))
@@ -717,7 +722,7 @@ if show_comparisons:
             premium_fig.add_trace(go.Bar(
                 x=['You', 'Peers'],
                 y=[current_premium, AVG_PEER_PREMIUM],
-                marker_color=['#28a745' if current_premium < AVG_PEER_PREMIUM else '#dc3545', '#95a5a6'],
+                marker_color=['#72ee8f' if current_premium < AVG_PEER_PREMIUM else "#f46f7d", "#ffd084"],
                 text=[f'${current_premium:,.0f}', f'${AVG_PEER_PREMIUM:,.0f}'],
                 textposition='auto'
             ))
@@ -734,7 +739,7 @@ if show_comparisons:
 # =========================
 # Trip Details Section
 # =========================
-st.markdown('<div class="section-header"><h3>🗺️ Recent Trip Analysis</h3></div>', unsafe_allow_html=True)
+st.markdown('<div class="section-header"><h3>Recent Trip Analysis</h3></div>', unsafe_allow_html=True)
 
 # Get recent trips
 trips_query = f"""
@@ -776,35 +781,35 @@ if not trips_data.empty:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("🟢 Safest Recent Trips")
+        st.subheader("Safest Recent Trips")
         safest_trips = trips_data.nsmallest(3, 'trip_risk_score')
         for _, trip in safest_trips.iterrows():
             st.markdown(f"""
-            <div style="background: rgba(40, 167, 69, 0.1); border-left: 4px solid #28a745; padding: 1rem; margin: 0.5rem 0; border-radius: 8px;">
-                <div style="font-weight: 600; color: #28a745;">Trip: {trip['TRIP_ID'][-8:]}</div>
-                <div style="font-size: 0.9rem; color: #495057; margin: 0.25rem 0;">
+            <div style="background: rgba(40, 167, 69, 0.1); border-left: 4px solid #72ee8f; padding: 1rem; margin: 0.5rem 0; border-radius: 8px;">
+                <div style="font-weight: 600; color: #72ee8f;">Trip: {trip['TRIP_ID'][-8:]}</div>
+                <div style="font-size: 0.9rem; color: #28a745; margin: 0.25rem 0;">
                     {trip['START_LOCATION']} → {trip['END_LOCATION']}
                 </div>
-                <div style="font-size: 0.85rem; color: #6c757d;">
+                <div style="font-size: 0.85rem; color: #B2BEB5;">
                     Distance: {trip['TRIP_DISTANCE_KM']:.1f} km | Avg Speed: {trip['AVG_SPEED']:.0f} km/h
                 </div>
             </div>
             """, unsafe_allow_html=True)
     
     with col2:
-        st.subheader("🔴 Riskiest Recent Trips")
+        st.subheader("Riskiest Recent Trips")
         riskiest_trips = trips_data.nlargest(3, 'trip_risk_score')
         for _, trip in riskiest_trips.iterrows():
             st.markdown(f"""
-            <div style="background: rgba(220, 53, 69, 0.1); border-left: 4px solid #dc3545; padding: 1rem; margin: 0.5rem 0; border-radius: 8px;">
-                <div style="font-weight: 600; color: #dc3545;">Trip: {trip['TRIP_ID'][-8:]}</div>
-                <div style="font-size: 0.9rem; color: #495057; margin: 0.25rem 0;">
+            <div style="background: rgba(220, 53, 69, 0.1); border-left: 4px solid #f46f7d; padding: 1rem; margin: 0.5rem 0; border-radius: 8px;">
+                <div style="font-weight: 600; color: #f46f7d;">Trip: {trip['TRIP_ID'][-8:]}</div>
+                <div style="font-size: 0.9rem; color: #dc3545; margin: 0.25rem 0;">
                     {trip['START_LOCATION']} → {trip['END_LOCATION']}
                 </div>
-                <div style="font-size: 0.85rem; color: #6c757d;">
+                <div style="font-size: 0.85rem; color: #B2BEB5;">
                     Distance: {trip['TRIP_DISTANCE_KM']:.1f} km | Max Speed: {trip['MAX_SPEED']:.0f} km/h
                 </div>
-                <div style="font-size: 0.85rem; color: #dc3545;">
+                <div style="font-size: 0.85rem; color: #f46f7d;">
                     Issues: {trip['HARD_BRAKING_COUNT']} hard brakes, {trip['PHONE_USAGE_COUNT']} phone events
                 </div>
             </div>
@@ -815,7 +820,7 @@ if not trips_data.empty:
 # =========================
 # Recommendations Section
 # =========================
-st.markdown('<div class="section-header"><h3>💡 Personalized Recommendations</h3></div>', unsafe_allow_html=True)
+st.markdown('<div class="section-header"><h3>Personalized Recommendations</h3></div>', unsafe_allow_html=True)
 
 recommendations = []
 
@@ -862,7 +867,7 @@ if safety_score > 90:
 # Display recommendations
 if recommendations:
     for rec in recommendations:
-        priority_color = {'high': '#dc3545', 'medium': '#ffc107', 'low': '#28a745'}[rec['priority']]
+        priority_color = {'high': '#f46f7d', 'medium': "#fedf80", 'low': '#72ee8f'}[rec['priority']]
         priority_bg = {'high': 'rgba(220, 53, 69, 0.1)', 'medium': 'rgba(255, 193, 7, 0.1)', 'low': 'rgba(40, 167, 69, 0.1)'}[rec['priority']]
         
         st.markdown(f"""
@@ -870,8 +875,8 @@ if recommendations:
             <div style="display: flex; align-items: flex-start; gap: 1rem;">
                 <div style="font-size: 2rem;">{rec['icon']}</div>
                 <div style="flex: 1;">
-                    <h4 style="margin: 0 0 0.5rem 0; color: #2c3e50; font-weight: 600;">{rec['title']}</h4>
-                    <p style="margin: 0 0 0.5rem 0; color: #495057;">{rec['description']}</p>
+                    <h4 style="margin: 0 0 0.5rem 0; color: #fff; font-weight: 600;">{rec['title']}</h4>
+                    <p style="margin: 0 0 0.5rem 0; color: #B2BEB5;">{rec['description']}</p>
                     <div style="font-size: 0.9rem; font-weight: 600; color: {priority_color};">💰 {rec['impact']}</div>
                 </div>
             </div>
@@ -922,7 +927,7 @@ st.markdown(f"""
         Next update: {(datetime.now() + timedelta(hours=1)).strftime('%H:%M')}
     </div>
     <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; margin-top: 0.5rem;">
-        🔒 Data secured with enterprise-grade encryption | 🛡️ Privacy compliant | 📊 Real-time analytics
+        Data secured with enterprise-grade encryption | Privacy compliant | Real-time analytics
     </div>
 </div>
 """, unsafe_allow_html=True)
